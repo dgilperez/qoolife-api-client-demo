@@ -1,12 +1,24 @@
 <h2><%= current_user[:name] %>'s journal</h2>
-<% @entries.each do |entry| %>
-<p>
-  <% if entry['private'] %>
-    <span class="label label-important">PRIVATE</span>
-  <% end %>
-  <span class="label"><%= Time.parse(entry['date']).to_formatted_s(:long) %></span>
-  <%= entry['body'] %>
-</p>
+<% @journal_entries.each do |entry| %>
+<div class="row">
+  <div class="span2">
+    <p>
+      <span class="label"><%= Time.parse(entry['date']).to_formatted_s(:long) %></span>
+    </p>
+  </div>
+  <div class="span1">
+    <p>
+      <% if entry['private'] %>
+        <span class="label label-important">PRIVATE</span>
+      <% end %>
+    </p>
+  </div>
+  <div class="span9">
+    <%= entry['body_html'] %>
+  </div>
+</div>
 <% end %>
+<hr />
+<a class="btn btn-primary" href="/journal_entries/new">New entry</a>
 
 

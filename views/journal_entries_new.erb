@@ -1,0 +1,19 @@
+<form class="form-horizontal" action="/journal_entries" method="POST">
+  <fieldset>
+    <legend>A new page in your diary</legend>
+    <div class="control-group">
+      <label class="control-label" for="input01">How do you feel today?</label>
+      <div class="controls">
+        <textarea class="input-xlarge" id="textarea" rows="5" name="journal_entry_body"></textarea>
+      </div>
+
+      <div class="controls">
+        <input id="journal_entry_private" name="journal_entry_private" type="checkbox" value="1"> marcar entrada como privada
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <a class="btn" href="/journal_entries">Cancel</a>
+    </div>
+  </fieldset>
+</form>
