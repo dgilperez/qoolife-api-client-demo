@@ -1,6 +1,5 @@
 require 'sinatra'
 require 'sinatra/reloader'
-require 'open-uri'
 require 'rest-client'
 require 'active_support'
 
@@ -44,23 +43,19 @@ end
 
 post '/login' do
   begin
-    api_query = open("http://localhost:3000/api/v1/users/login", :http_basic_authentication => [params[:user_email], params[:user_password]])
-  rescue OpenURI::HTTPError => ex
+    api_query = RestClient::Resource.new("http://localhost:3000/api/v1/users/login", :user => params[:user_email], :password => params[:user_password])
+    json_response = ActiveSupport::JSON.decode(api_query.get)
+  rescue => ex
     logger.error "Exception at /login: #{ex.to_s}"
-  end
-
-  if api_query && api_query.status[0] == "200"
-    json_response = ActiveSupport::JSON.decode(api_query.read)
-
-    session[:user_email]      = params[:user_email]
-    session[:user_password]   = params[:user_password]
-    session[:user_first_name] = json_response['first_name']
-    session[:user_last_name]  = json_response['last_name']
-
-    redirect to("/")
-  else
     redirect to("/login")
   end
+
+  session[:user_email]      = params[:user_email]
+  session[:user_password]   = params[:user_password]
+  session[:user_first_name] = json_response['first_name']
+  session[:user_last_name]  = json_response['last_name']
+
+  redirect to("/")
 end
 
 get '/logout' do
@@ -71,19 +66,15 @@ end
 
 get '/journal_entries' do
   begin
-    api_query = open("http://localhost:3000/api/v1/journal_entries", :http_basic_authentication => [current_user[:email], current_user[:password]])
-  rescue OpenURI::HTTPError => ex
+    api_query = RestClient::Resource.new("http://localhost:3000/api/v1/journal_entries", :user => current_user[:email], :password => current_user[:password])
+    json_response = ActiveSupport::JSON.decode(api_query.get)
+  rescue => ex
     logger.error "Exception at /journal_entries: #{ex.to_s}"
     redirect to("/login")
   end
 
-  if api_query.status[0] == "200"
-    json_response = ActiveSupport::JSON.decode(api_query.read)
-    @journal_entries = json_response.sort_by {|entry| Time.parse(entry['date'])}.reverse
-    erb :journal_entries
-  else
-    redirect to("/login")
-  end
+  @journal_entries = json_response.sort_by {|entry| Time.parse(entry['date'])}.reverse
+  erb :journal_entries
 end
 
 post '/journal_entries' do
