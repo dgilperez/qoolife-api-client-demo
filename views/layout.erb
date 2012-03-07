@@ -37,6 +37,11 @@
           </a>
           <a class="brand" href="/">Qoolife</a>
           <div class="nav-collapse">
+            <% if logged_in? %>
+            <ul class="nav">
+              <li><a href="/journal_entries">My journal</a></li>
+            </ul>
+            <% end %>
             <p class="navbar-text pull-right">
               <% if logged_in? %>
                 Logged in as <a href="#"><%= current_user[:email] %></a>. <a class="label label-important" href="/logout">LOGOUT</a>
