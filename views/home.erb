@@ -1,0 +1,11 @@
+<div class="hero-unit">
+  <h1>Qoolife API client demo</h1>
+  <p>This is just a demo client for the Qoolife API.</p>
+  <% if !logged_in? %>
+    <a class="btn btn-primary btn-large" href="/login">
+      Start by logging in
+    </a>
+  <% else %>
+    <p>Welcome, <%= current_user[:first_name] %></p>
+  <% end %>
+</div>
