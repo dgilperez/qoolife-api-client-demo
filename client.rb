@@ -23,6 +23,10 @@ helpers do
   def authenticate!
     redirect to("/login") if !logged_in?
   end
+
+  def api_endpoint
+    ENV['QOOLIFE_API_ENDPOINT'] || "http://localhost:3000/api/v1"
+  end
 end
 
 before '/journal_entries*' do
@@ -43,7 +47,7 @@ end
 
 post '/login' do
   begin
-    api_query = RestClient::Resource.new("http://localhost:3000/api/v1/users/login", :user => params[:user_email], :password => params[:user_password])
+    api_query = RestClient::Resource.new("#{api_endpoint}/users/login", :user => params[:user_email], :password => params[:user_password])
     json_response = ActiveSupport::JSON.decode(api_query.get)
   rescue => ex
     logger.error "Exception at /login: #{ex.to_s}"
@@ -66,7 +70,7 @@ end
 
 get '/journal_entries' do
   begin
-    api_query = RestClient::Resource.new("http://localhost:3000/api/v1/journal_entries", :user => current_user[:email], :password => current_user[:password])
+    api_query = RestClient::Resource.new("#{api_endpoint}/journal_entries", :user => current_user[:email], :password => current_user[:password])
     json_response = ActiveSupport::JSON.decode(api_query.get)
   rescue => ex
     logger.error "Exception at /journal_entries: #{ex.to_s}"
@@ -79,7 +83,7 @@ end
 
 post '/journal_entries' do
   begin
-    resource = RestClient::Resource.new('http://localhost:3000/api/v1/journal_entries', :user => current_user[:email], :password => current_user[:password])
+    resource = RestClient::Resource.new("#{api_endpoint}/journal_entries", :user => current_user[:email], :password => current_user[:password])
     resource.post(:journal_entry => {:body => params[:journal_entry_body], :private => params[:journal_entry_private], :date => Time.now})
   rescue => ex
     logger.error "Exception at /journal_entries: #{ex.to_s}"
